@@ -1,1056 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Spelling Star Quest ⭐ | 1st Grade Spelling Practice</title>
-  
-  <!-- Tailwind CSS CDN -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spelling Star Quest ⭐</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Canvas Confetti for celebratory particle bursts -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
-  <!-- Google Fonts: Fredoka (friendly round kid font) and Quicksand -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Quicksand:wght@600;700&family=Shantell+Sans:wght@700&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            kid: ['"Fredoka"', 'Quicksand', 'sans-serif'],
-            display: ['"Shantell Sans"', '"Fredoka"', 'cursive', 'sans-serif']
-          },
-          animation: {
-            'bounce-slow': 'bounce 2.5s infinite',
-            'wiggle': 'wiggle 0.5s ease-in-out',
-            'pulse-glow': 'pulseGlow 2s infinite',
-            'float': 'float 3s ease-in-out infinite'
-          },
-          keyframes: {
-            wiggle: {
-              '0%, 100%': { transform: 'translateX(0)' },
-              '20%, 60%': { transform: 'translateX(-10px)' },
-              '40%, 80%': { transform: 'translateX(10px)' }
-            },
-            pulseGlow: {
-              '0%, 100%': { boxShadow: '0 0 15px rgba(99, 102, 241, 0.5)' },
-              '50%': { boxShadow: '0 0 35px rgba(168, 85, 247, 0.85)' }
-            },
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-8px)' }
-            }
-          }
-        }
-      }
-    }
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
-    body {
-      font-family: 'Fredoka', 'Quicksand', sans-serif;
-      touch-action: manipulation;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-    /* Custom button 3D push effect for tactile feedback */
-    .btn-3d {
-      transition: all 0.1s ease;
-      position: relative;
-    }
-    .btn-3d:active {
-      transform: translateY(4px);
-    }
-    .btn-3d-amber {
-      border-bottom: 6px solid #b45309;
-    }
-    .btn-3d-amber:active {
-      border-bottom-width: 2px;
-    }
-    .btn-3d-emerald {
-      border-bottom: 6px solid #065f46;
-    }
-    .btn-3d-emerald:active {
-      border-bottom-width: 2px;
-    }
-    .btn-3d-indigo {
-      border-bottom: 6px solid #3730a3;
-    }
-    .btn-3d-indigo:active {
-      border-bottom-width: 2px;
-    }
-    .btn-3d-purple {
-      border-bottom: 6px solid #6b21a8;
-    }
-    .btn-3d-purple:active {
-      border-bottom-width: 2px;
-    }
-    /* Keyboard key styling */
-    .key-btn {
-      transition: all 0.08s ease;
-      touch-action: manipulation;
-    }
-    .key-btn:active {
-      transform: scale(0.92);
-      filter: brightness(0.9);
-    }
+    body { font-family: 'Fredoka', cursive, sans-serif; }
+    .key-btn { touch-action: manipulation; }
   </style>
 </head>
+<body class="bg-indigo-50 min-h-screen flex flex-col items-center justify-between p-4 select-none">
 
-<body class="bg-gradient-to-b from-sky-200 via-indigo-100 to-amber-50 min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 text-slate-800">
-
-  <!-- Audio Activation Banner (Satisfies browser autoplay requirements with 1 single click) -->
-  <div id="audioUnlockModal" class="fixed inset-0 bg-indigo-950/85 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full text-center shadow-2xl border-4 border-amber-400 animate-float">
-      <div class="text-7xl mb-3 animate-bounce">🎧</div>
-      <h2 class="text-3xl font-black text-indigo-800 font-display mb-2">Spelling Star Quest!</h2>
-      <p class="text-slate-600 font-semibold mb-6 text-base sm:text-lg">
-        Tap the big button below to turn on the sound so your Chromebook can read your words aloud!
-      </p>
-      <button onclick="unlockAudioSystem()" class="w-full btn-3d btn-3d-emerald bg-emerald-500 hover:bg-emerald-600 text-white font-black text-2xl py-5 rounded-2xl shadow-xl flex items-center justify-center gap-3">
-        <span>🔊 Turn On Sound & Play!</span>
-      </button>
-      <p class="text-xs text-slate-400 mt-4 font-bold">1st Grade Chromebook Edition ⭐ English & Español</p>
+  <!-- Header / Controls -->
+  <header class="w-full max-w-2xl flex justify-between items-center bg-white px-5 py-3 rounded-3xl shadow-sm border-2 border-indigo-100">
+    <div class="flex items-center space-x-2">
+      <span class="text-3xl">⭐</span>
+      <span id="starScore" class="text-2xl font-bold text-amber-500">0</span>
+      <span class="text-sm text-gray-500 font-semibold ml-1">Stars</span>
     </div>
-  </div>
-
-  <header class="w-full max-w-2xl flex items-center justify-between bg-white/90 backdrop-blur-md rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xl border-4 border-amber-300">
-    <div class="flex items-center gap-2 sm:gap-3">
-      <span class="text-3xl sm:text-4xl animate-bounce-slow">🚀</span>
-      <div>
-        <h1 class="text-xl sm:text-2xl font-black text-indigo-700 tracking-wide font-display leading-tight">Spelling Star Quest</h1>
-        <div class="flex items-center gap-2 mt-0.5">
-          <span id="badgeLang" class="text-xs font-bold text-indigo-700 bg-indigo-100 px-2 py-0.5 rounded-full">
-            🇺🇸 English
-          </span>
-          <span id="audioStatusIndicator" class="text-xs font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Sound On
-          </span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Star Point Counter & Parent Settings Lock -->
-    <div class="flex items-center gap-2 sm:gap-3">
-      <div class="flex items-center bg-amber-100 border-3 border-amber-400 px-3.5 py-1 rounded-2xl shadow-sm">
-        <span class="text-2xl sm:text-3xl mr-1">⭐</span>
-        <span id="starScore" class="text-2xl sm:text-3xl font-black text-amber-700">0</span>
-      </div>
-      <button onclick="openParentGate()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border-2 border-slate-300 p-2 sm:px-3 sm:py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-1 shadow-sm transition-all" title="Parent Dashboard">
-        <span class="text-xl">⚙️</span>
-        <span class="hidden sm:inline">Parents</span>
-      </button>
+    <div class="flex items-center space-x-3">
+      <span id="langPill" class="px-3 py-1 bg-indigo-100 text-indigo-700 text-xs font-bold rounded-full">EN</span>
+      <button onclick="openSettings()" class="p-2 text-gray-400 hover:text-indigo-600 transition">⚙️</button>
     </div>
   </header>
 
-  <main id="appContainer" class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl p-4 sm:p-7 border-4 border-indigo-200 my-3 flex flex-col items-center justify-between min-h-[530px] relative">
+  <!-- Main Game Stage -->
+  <main class="w-full max-w-2xl flex-1 flex flex-col justify-center items-center my-4">
     
-    <!-- Top Progress Bar -->
-    <div class="w-full">
-      <div class="flex items-center justify-between mb-1.5 text-slate-600 font-bold text-xs sm:text-sm">
-        <span id="progressStepLabel">Word 1 of 5</span>
-        <span id="levelBadge" class="text-xs font-black bg-indigo-100 text-indigo-800 px-2.5 py-1 rounded-full uppercase tracking-wider">
-          Level 1: Words
-        </span>
-      </div>
-      <div class="w-full bg-slate-100 h-3.5 rounded-full overflow-hidden border border-slate-200">
-        <div id="progressBarFill" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full w-0 transition-all duration-500 rounded-full"></div>
-      </div>
-    </div>
-
-    <!-- Active Question Zone -->
-    <div id="quizPanel" class="w-full flex flex-col items-center my-auto">
-      
-      <!-- Big Tactile Audio Dictation Button (THE WORD IS NEVER DISPLAYED ON SCREEN) -->
-      <div class="flex flex-col items-center my-3">
-        <button id="btnMainSpeak" onclick="playCurrentDictation(false)" class="btn-3d btn-3d-indigo group pulse-glow bg-gradient-to-tr from-indigo-500 via-indigo-600 to-purple-600 text-white font-black p-6 sm:p-7 rounded-full shadow-2xl transition-all">
-          <div class="flex flex-col items-center">
-            <span class="text-5xl sm:text-6xl transition-transform group-hover:scale-110">🔊</span>
-            <span id="btnSpeakLabel" class="text-xs sm:text-sm mt-2 font-display tracking-wider bg-white/20 px-3 py-1 rounded-full uppercase font-bold">
-              Listen to Word
-            </span>
-          </div>
-        </button>
-
-        <!-- Slower Speed Turtle Button & Phonics Hint -->
-        <div class="flex items-center gap-3 mt-3">
-          <button onclick="playCurrentDictation(true)" class="btn-3d btn-3d-amber bg-amber-400 hover:bg-amber-500 text-amber-950 font-bold px-3.5 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 shadow-sm">
-            <span>🐢</span> Say Slower
-          </button>
-          <button onclick="requestPhonicsHint()" id="btnPhonicsHint" class="btn-3d bg-sky-100 hover:bg-sky-200 border-b-4 border-sky-300 text-sky-900 font-bold px-3.5 py-1.5 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 shadow-sm">
-            <span>💡</span> Hint
-          </button>
-        </div>
-      </div>
-
-      <!-- Phonics Hint Container (Hidden until clicked or needed) -->
-      <div id="hintBubble" class="hidden my-2 p-2.5 px-4 bg-sky-50 border-2 border-dashed border-sky-300 rounded-2xl text-center max-w-sm">
-        <p class="text-xs text-sky-800 font-bold">First letter sound: <span id="hintFirstLetter" class="text-xl text-indigo-700 font-black">?</span></p>
-        <p id="hintLengthPattern" class="text-xl sm:text-2xl font-mono tracking-widest text-slate-700 font-black mt-0.5"></p>
-      </div>
-
-      <!-- Sentence Dictation Prompt Box (Appears during sentence stage) -->
-      <div id="sentenceContextBox" class="hidden my-2 p-3 bg-purple-50 border-2 border-purple-300 rounded-2xl w-full text-center max-w-md">
-        <span class="text-xs uppercase tracking-wide font-extrabold text-purple-700 block">Weekly Sentence Challenge 📝</span>
-        <span class="text-xs text-purple-900 font-bold">Listen carefully and type the entire sentence!</span>
-      </div>
-
-      <!-- Kid's Input Area -->
-      <div class="w-full max-w-md mt-2">
-        <label id="inputHelpText" for="spellingInput" class="block text-center text-xs sm:text-sm font-bold text-slate-500 mb-1">
-          Type the letters you heard:
-        </label>
-        <input 
-          type="text" 
-          id="spellingInput" 
-          autocomplete="off" 
-          autocorrect="off" 
-          autocapitalize="off" 
-          spellcheck="false"
-          placeholder="type here..." 
-          class="w-full text-center text-2xl sm:text-4xl font-black py-3 px-4 bg-slate-50 border-4 border-indigo-300 focus:border-indigo-600 focus:bg-white rounded-2xl outline-none shadow-inner text-slate-800 tracking-wider placeholder:text-slate-300 placeholder:text-xl font-kid"
-        />
-      </div>
-
-      <!-- Immediate Feedback Toast Message -->
-      <div id="feedbackBanner" class="h-8 mt-2 text-center text-lg sm:text-xl font-black font-display transition-all"></div>
-
-      <!-- Submit & Next Action Button -->
-      <div class="w-full max-w-md mt-1">
-        <button id="btnCheckAnswer" onclick="verifyAnswer()" class="w-full btn-3d btn-3d-emerald bg-emerald-500 hover:bg-emerald-600 text-white text-xl sm:text-2xl font-black py-3 sm:py-3.5 rounded-2xl shadow-lg flex items-center justify-center gap-2">
-          <span>Check Answer</span> <span>✨</span>
-        </button>
-      </div>
-
-      <div id="virtualKeypad" class="w-full max-w-md mt-4 bg-slate-100 p-2 sm:p-2.5 rounded-2xl border-2 border-slate-200 shadow-inner">
-        <div class="flex justify-between items-center mb-1.5 px-1">
-          <span class="text-xs font-bold text-slate-500">Touch Keyboard</span>
-          <button type="button" onclick="insertSpace()" class="text-xs font-bold text-indigo-700 bg-white px-2 py-0.5 rounded-lg border border-slate-300 shadow-xs">
-            [ Spacebar ]
-          </button>
-        </div>
-        <div id="keyboardRows" class="flex flex-col gap-1.5 items-center">
-          <!-- Populated by JavaScript according to language (includes 'ñ' for Spanish) -->
-        </div>
-      </div>
-
-    </div>
-
-    <div id="victoryPanel" class="hidden w-full flex flex-col items-center text-center py-4 my-auto">
-      <div class="text-7xl sm:text-8xl animate-bounce-slow mb-2">🏆</div>
-      <h2 class="text-3xl sm:text-4xl font-black text-amber-500 font-display mb-1">Spelling Superstar!</h2>
-      <p id="victorySubtitle" class="text-base sm:text-lg text-slate-600 font-bold mb-4">You finished all your weekly words!</p>
-      
-      <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-5 w-full max-w-md mb-6 shadow-md">
-        <div class="flex justify-around items-center mb-4">
-          <div>
-            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Stars</span>
-            <div id="finalScoreStars" class="text-4xl font-black text-amber-600">⭐ 0</div>
-          </div>
-          <div class="h-10 w-0.5 bg-amber-200"></div>
-          <div>
-            <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Completed</span>
-            <div id="finalCountMastered" class="text-4xl font-black text-indigo-600">0</div>
-          </div>
-        </div>
-
-        <div class="text-left bg-white p-3 rounded-2xl border border-amber-200">
-          <p class="text-xs font-bold text-slate-400 mb-2 uppercase">Words Mastered Today:</p>
-          <div id="victoryWordTags" class="flex flex-wrap gap-2"></div>
-        </div>
-      </div>
-
-      <button onclick="startFreshQuiz()" class="btn-3d btn-3d-indigo bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl py-3.5 px-8 rounded-2xl shadow-xl flex items-center gap-2">
-        <span>🔄 Practice Again!</span>
+    <!-- Audio Start Overlay -->
+    <div id="startOverlay" class="w-full bg-white rounded-3xl p-8 border-4 border-indigo-200 shadow-xl text-center space-y-5">
+      <div class="text-6xl animate-bounce">🎧</div>
+      <h2 class="text-3xl font-bold text-indigo-900">Spelling Star Quest!</h2>
+      <p class="text-gray-600 text-lg">Click the button below to turn on sound and start the quiz.</p>
+      <button onclick="startAppWithAudio()" class="w-full py-4 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white text-2xl font-bold rounded-2xl shadow-lg transition">
+        🔊 Turn On Sound & Start!
       </button>
     </div>
 
-    <!-- Footer Advice -->
-    <div class="w-full text-center text-xs font-semibold text-slate-400 mt-2">
-      Tip for Chromebook: You can also use the physical keyboard and press <kbd class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-300 text-slate-600">Enter</kbd>!
+    <!-- Active Word Screen -->
+    <div id="quizScreen" class="w-full bg-white rounded-3xl p-6 border-4 border-indigo-200 shadow-lg hidden space-y-6 text-center">
+      
+      <div class="flex justify-between items-center text-sm font-bold text-gray-400">
+        <span id="wordProgress">Word 1 of 5</span>
+        <span id="streakCount" class="text-orange-500">🔥 Streak: 0</span>
+      </div>
+
+      <!-- Listen Controls -->
+      <div class="flex flex-col sm:flex-row justify-center gap-3">
+        <button onclick="sayCurrentWord(1.0)" class="flex-1 py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white font-bold text-xl rounded-2xl shadow-md transition flex items-center justify-center space-x-2">
+          <span>🔊 Say Word</span>
+        </button>
+        <button onclick="sayCurrentWord(0.65)" class="py-4 px-6 bg-amber-400 hover:bg-amber-500 active:scale-95 text-amber-950 font-bold text-xl rounded-2xl shadow-md transition flex items-center justify-center space-x-2">
+          <span>🐢 Slow</span>
+        </button>
+      </div>
+
+      <!-- Word Display / Input Blank -->
+      <div class="py-4 bg-indigo-50/50 rounded-2xl border-2 border-dashed border-indigo-200 min-h-[90px] flex items-center justify-center">
+        <span id="typedDisplay" class="text-4xl sm:text-5xl font-bold tracking-widest text-indigo-950">_ _ _</span>
+      </div>
+
+      <!-- On-Screen Keyboard -->
+      <div id="keyboard" class="grid grid-cols-7 sm:grid-cols-9 gap-1.5 pt-2"></div>
+
+      <!-- Action Row -->
+      <div class="flex gap-2">
+        <button onclick="handleBackspace()" class="w-1/3 py-3 bg-red-100 hover:bg-red-200 active:scale-95 text-red-700 font-bold rounded-xl transition">
+          ⌫ Delete
+        </button>
+        <button onclick="checkAnswer()" class="w-2/3 py-3 bg-emerald-500 hover:bg-emerald-600 active:scale-95 text-white font-bold text-lg rounded-xl shadow transition">
+          Check Word ✨
+        </button>
+      </div>
+
+      <!-- Hint Feedback Banner -->
+      <div id="feedbackMsg" class="min-h-[28px] text-base font-bold text-indigo-600"></div>
+    </div>
+
+    <!-- Completion Screen -->
+    <div id="winScreen" class="w-full bg-white rounded-3xl p-8 border-4 border-amber-300 shadow-xl hidden text-center space-y-4">
+      <div class="text-7xl animate-bounce">🏆</div>
+      <h2 class="text-3xl font-bold text-indigo-900">You Finished All Words!</h2>
+      <p class="text-xl text-gray-600">You earned <span id="finalScore" class="font-bold text-amber-500">0</span> Stars!</p>
+      <button onclick="restartQuiz()" class="py-3 px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xl rounded-2xl shadow-lg transition">
+        Play Again 🔄
+      </button>
     </div>
   </main>
 
-  <div id="parentGateModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl border-4 border-indigo-300">
-      <div class="text-4xl mb-2">🔒</div>
-      <h3 class="text-xl font-bold text-slate-800 mb-1">Parent Lock</h3>
-      <p class="text-xs text-slate-500 font-semibold mb-4">Please solve this quick problem to edit settings:</p>
+  <!-- Parent Settings Modal -->
+  <div id="settingsModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border-2 border-indigo-100 space-y-4">
+      <h3 class="text-2xl font-bold text-indigo-950">⚙️ Weekly Word Setup</h3>
       
-      <div class="text-2xl font-black text-indigo-700 mb-3 bg-indigo-50 py-2 rounded-xl">
-        <span id="gateMathProblem">4 + 3 = ?</span>
+      <div>
+        <label class="text-xs font-bold text-gray-400 block mb-1">LANGUAGE</label>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="btnLangEn" onclick="setLang('en')" class="py-2 rounded-xl font-bold border-2 border-indigo-600 bg-indigo-50 text-indigo-700">English</button>
+          <button id="btnLangEs" onclick="setLang('es')" class="py-2 rounded-xl font-bold border-2 border-gray-200 text-gray-600">Español</button>
+        </div>
       </div>
 
-      <input 
-        type="number" 
-        id="gateAnswerInput" 
-        placeholder="Answer"
-        class="w-full text-center text-2xl font-bold py-2 px-3 border-2 border-slate-300 rounded-xl mb-4 outline-none focus:border-indigo-600"
-      />
+      <div>
+        <label class="text-xs font-bold text-gray-400 block mb-1">WEEKLY WORDS (separated by commas)</label>
+        <textarea id="wordInput" rows="3" class="w-full p-3 rounded-xl border-2 border-indigo-100 font-semibold focus:outline-indigo-500 text-sm" placeholder="cat, ship, jump, like, play"></textarea>
+      </div>
 
-      <div class="flex gap-2">
-        <button onclick="closeParentGate()" class="flex-1 bg-slate-200 hover:bg-slate-300 font-bold py-2.5 rounded-xl text-slate-700 text-sm">
-          Cancel
+      <div class="flex gap-2 pt-2">
+        <button onclick="testVoiceDiagnostics()" class="w-1/2 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-sm">
+          🔊 Test Audio
         </button>
-        <button onclick="verifyParentGate()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 font-bold py-2.5 rounded-xl text-white text-sm shadow-md">
-          Enter
+        <button onclick="saveAndCloseSettings()" class="w-1/2 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-sm shadow">
+          Save & Start
         </button>
       </div>
-    </div>
-  </div>
-
-  <div id="parentDashboardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-5 sm:p-7 shadow-2xl border-4 border-amber-300 max-h-[92vh] overflow-y-auto">
-      
-      <div class="flex justify-between items-center mb-4 border-b pb-3">
-        <div class="flex items-center gap-2">
-          <span class="text-3xl">👩‍🏫</span>
-          <div>
-            <h2 class="text-xl sm:text-2xl font-black text-slate-800 leading-tight">Weekly Teacher & Parent Setup</h2>
-            <p class="text-xs text-slate-500 font-semibold">Saved automatically on this Chromebook</p>
-          </div>
-        </div>
-        <button onclick="closeParentDashboard()" class="text-slate-400 hover:text-slate-700 text-3xl font-black leading-none">&times;</button>
-      </div>
-
-      <form id="settingsForm" onsubmit="handleSaveSettings(event)" class="space-y-4">
-        
-        <!-- Language Selection -->
-        <div>
-          <label class="block text-sm font-bold text-slate-700 mb-1">1. Language / Idioma</label>
-          <div class="grid grid-cols-2 gap-3">
-            <label class="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 cursor-pointer font-bold transition-all text-sm" id="langRadioEn">
-              <input type="radio" name="langSelection" value="en-US" class="hidden" onchange="syncLangUI()">
-              <span>🇺🇸 English</span>
-            </label>
-            <label class="flex items-center justify-center gap-2 p-3 rounded-2xl border-2 cursor-pointer font-bold transition-all text-sm" id="langRadioEs">
-              <input type="radio" name="langSelection" value="es-ES" class="hidden" onchange="syncLangUI()">
-              <span>🇪🇸 Español</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Sound Diagnostic Verifier -->
-        <div class="bg-indigo-50/80 p-3 rounded-2xl border-2 border-indigo-200">
-          <div class="flex items-center justify-between">
-            <div>
-              <span class="text-xs font-bold text-indigo-900 block">Sound Diagnostic Test</span>
-              <span id="detectedVoiceStatus" class="text-xs text-indigo-600 font-semibold">Detecting system speech voices...</span>
-            </div>
-            <button type="button" onclick="testSoundEngine()" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm">
-              🔊 Test Voice
-            </button>
-          </div>
-        </div>
-
-        <!-- Weekly Word List Input -->
-        <div>
-          <div class="flex justify-between items-center mb-1">
-            <label for="inputWordList" class="text-sm font-bold text-slate-700">2. Weekly Word List</label>
-            <span class="text-xs text-slate-400 font-semibold">Separate with commas</span>
-          </div>
-          <textarea 
-            id="inputWordList" 
-            rows="3" 
-            class="w-full border-2 border-slate-300 focus:border-indigo-500 rounded-2xl p-3 font-semibold text-slate-700 outline-none text-base font-kid"
-            placeholder="cat, ship, jump, play, like"
-            required
-          ></textarea>
-        </div>
-
-        <!-- Weekly Sentence Input -->
-        <div>
-          <label for="inputSentenceDictation" class="block text-sm font-bold text-slate-700 mb-1">3. Weekly Sentence Dictation</label>
-          <input 
-            type="text" 
-            id="inputSentenceDictation" 
-            class="w-full border-2 border-slate-300 focus:border-indigo-500 rounded-2xl p-3 font-semibold text-slate-700 outline-none text-base font-kid"
-            placeholder="The cat can jump."
-            required
-          />
-        </div>
-
-        <!-- Preset Quick Loaders & Save Button -->
-        <div class="flex items-center gap-2 pt-2 border-t">
-          <button type="button" onclick="loadSamplePreset('en')" class="text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 py-2 px-3 rounded-xl border border-indigo-200">
-            Sample EN
-          </button>
-          <button type="button" onclick="loadSamplePreset('es')" class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 py-2 px-3 rounded-xl border border-emerald-200">
-            Sample ES
-          </button>
-          <div class="flex-1"></div>
-          <button type="submit" class="btn-3d btn-3d-emerald bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold px-6 py-2.5 rounded-2xl shadow-md text-sm">
-            Save & Start Practice
-          </button>
-        </div>
-
-      </form>
     </div>
   </div>
 
   <script>
-    // Application State
-    const AppState = {
-      lang: 'en-US',
-      words: ['cat', 'ship', 'jump', 'play', 'like'],
-      sentence: 'The cat can jump.',
-      currentIndex: 0,
-      isSentenceStage: false,
-      stars: 0,
-      attemptsOnCurrent: 0,
-      soundUnlocked: false,
-      parentGateSolution: 0
-    };
-
-    // Keep global speech utterance to prevent Chrome garbage collector bug
-    window._activeUtterance = null;
-    let systemVoices = [];
+    // State
+    let words = ['cat', 'ship', 'jump', 'play', 'like'];
+    let currentIdx = 0;
+    let currentInput = '';
+    let score = 0;
+    let streak = 0;
+    let currentLang = 'en';
     let audioCtx = null;
+    let availableVoices = [];
 
-    // Web Audio Synthesizer (Provides 100% reliable offline sound chimes)
-    function getAudioContext() {
+    // Audio Context unlocker
+    function initAudioContext() {
       if (!audioCtx) {
-        const AudioClass = window.AudioContext || window.webkitAudioContext;
-        if (AudioClass) {
-          audioCtx = new AudioClass();
-        }
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
-      if (audioCtx && audioCtx.state === 'suspended') {
+      if (audioCtx.state === 'suspended') {
         audioCtx.resume();
       }
-      return audioCtx;
     }
 
-    function playSynthTone(freq, type, duration, startTime = 0, gainLevel = 0.2) {
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime + startTime;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, now);
-        gain.gain.setValueAtTime(gainLevel, now);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-
-        osc.start(now);
-        osc.stop(now + duration);
-      } catch (e) {
-        console.warn('Synth error:', e);
-      }
-    }
-
-    function soundSuccessChime() {
-      playSynthTone(523.25, 'triangle', 0.2, 0.0, 0.25); // C5
-      playSynthTone(659.25, 'triangle', 0.2, 0.08, 0.25); // E5
-      playSynthTone(783.99, 'triangle', 0.35, 0.16, 0.3); // G5
-    }
-
-    function soundTryAgainBoop() {
-      playSynthTone(240, 'sine', 0.25, 0.0, 0.2);
-      playSynthTone(180, 'sine', 0.3, 0.12, 0.18);
-    }
-
-    function soundGrandVictory() {
-      const notes = [523.25, 659.25, 783.99, 1046.50];
-      notes.forEach((freq, idx) => {
-        playSynthTone(freq, 'triangle', 0.45, idx * 0.11, 0.25);
-      });
-    }
-
-    function refreshSystemVoices() {
+    // Preload system voices
+    function populateVoices() {
       if ('speechSynthesis' in window) {
-        systemVoices = window.speechSynthesis.getVoices();
-        const langPrefix = AppState.lang.split('-')[0];
-        const matched = systemVoices.find(v => v.lang.toLowerCase().startsWith(langPrefix));
-        const indicator = document.getElementById('detectedVoiceStatus');
-        if (indicator) {
-          if (matched) {
-            indicator.textContent = `Voice: ${matched.name} (${matched.lang})`;
-          } else if (systemVoices.length > 0) {
-            indicator.textContent = `Using browser system voice (${systemVoices[0].lang})`;
-          } else {
-            indicator.textContent = `Speech engine ready`;
-          }
-        }
+        availableVoices = window.speechSynthesis.getVoices();
       }
     }
-
     if ('speechSynthesis' in window) {
-      window.speechSynthesis.onvoiceschanged = refreshSystemVoices;
-      refreshSystemVoices();
+      window.speechSynthesis.onvoiceschanged = populateVoices;
+      populateVoices();
     }
 
-    // Direct audio streaming fallback (works even on restricted environments)
-    function playAudioStreamFallback(text, langCode = 'en') {
-      try {
-        const langClean = langCode.startsWith('es') ? 'es' : 'en';
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langClean}&client=tw-ob&q=${encodeURIComponent(text)}`;
-        const fallbackAudio = new Audio(url);
-        fallbackAudio.play().catch(e => console.warn('Fallback stream error', e));
-      } catch (err) {
-        console.warn('Audio fallback failed', err);
+    // Play a friendly synth chime (always works without external downloads)
+    function playBeep(success = true) {
+      initAudioContext();
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      const now = audioCtx.currentTime;
+      if (success) {
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      } else {
+        osc.frequency.setValueAtTime(220, now); // A3
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.start(now);
+        osc.stop(now + 0.3);
       }
     }
 
-    function speakAloud(text, isSlow = false, onFinished = null) {
-      getAudioContext();
+    // Reliable Voice Speaker (With Fallback)
+    function speakText(text, rate = 1.0) {
+      initAudioContext();
 
       if ('speechSynthesis' in window) {
-        try {
-          window.speechSynthesis.cancel(); // clear previous queue
+        window.speechSynthesis.cancel(); // clear previous stuck speech
 
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.rate = isSlow ? 0.65 : 0.88;
-          utterance.pitch = 1.05;
-          utterance.lang = AppState.lang;
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = rate;
+        utter.lang = currentLang === 'es' ? 'es-ES' : 'en-US';
 
-          if (!systemVoices || systemVoices.length === 0) {
-            systemVoices = window.speechSynthesis.getVoices();
+        // Select exact language voice if available
+        if (availableVoices.length > 0) {
+          const match = availableVoices.find(v => v.lang.startsWith(currentLang));
+          if (match) utter.voice = match;
+        }
+
+        let hasSpoken = false;
+        utter.onstart = () => { hasSpoken = true; };
+
+        window.speechSynthesis.speak(utter);
+
+        // Fallback check: if speech synthesis is blocked, use audio endpoint
+        setTimeout(() => {
+          if (!hasSpoken && !window.speechSynthesis.speaking) {
+            playAudioFallback(text);
           }
+        }, 350);
+      } else {
+        playAudioFallback(text);
+      }
+    }
 
-          const langPrefix = AppState.lang.split('-')[0];
-          // Prefer child-friendly, natural, or Google Chromebook voices
-          const selectedVoice = systemVoices.find(v => 
-            v.lang.toLowerCase().startsWith(langPrefix) && 
-            (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha') || true)
-          );
+    function playAudioFallback(text) {
+      const langParam = currentLang === 'es' ? 'es' : 'en';
+      const url = `https://translate.google.com/translate_tts?ie=UTF-8&tl=${langParam}&client=tw-ob&q=${encodeURIComponent(text)}`;
+      const audio = new Audio(url);
+      audio.play().catch(e => console.log('Audio fallback failed:', e));
+    }
 
-          if (selectedVoice) {
-            utterance.voice = selectedVoice;
+    function startAppWithAudio() {
+      initAudioContext();
+      document.getElementById('startOverlay').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      loadSavedConfig();
+      buildKeyboard();
+      loadWord();
+      playBeep(true);
+      setTimeout(() => sayCurrentWord(), 400);
+    }
+
+    function sayCurrentWord(rate = 1.0) {
+      const target = words[currentIdx];
+      if (target) speakText(target, rate);
+    }
+
+    function loadWord() {
+      currentInput = '';
+      updateDisplay();
+      document.getElementById('wordProgress').innerText = `Word ${currentIdx + 1} of ${words.length}`;
+      document.getElementById('feedbackMsg').innerText = '';
+    }
+
+    function buildKeyboard() {
+      const kb = document.getElementById('keyboard');
+      kb.innerHTML = '';
+      const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+      if (currentLang === 'es') letters.push('ñ');
+
+      letters.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.innerText = letter.toUpperCase();
+        btn.className = "key-btn py-3 sm:py-3.5 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-900 font-bold rounded-xl text-lg shadow-sm border border-indigo-100 transition";
+        btn.onclick = () => handleKey(letter);
+        kb.appendChild(btn);
+      });
+    }
+
+    function handleKey(letter) {
+      initAudioContext();
+      if (currentInput.length < 15) {
+        currentInput += letter;
+        updateDisplay();
+      }
+    }
+
+    function handleBackspace() {
+      initAudioContext();
+      currentInput = currentInput.slice(0, -1);
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      const display = document.getElementById('typedDisplay');
+      display.innerText = currentInput.length === 0 ? '_ _ _' : currentInput.toUpperCase();
+    }
+
+    function checkAnswer() {
+      const target = words[currentIdx].trim().toLowerCase();
+      const entered = currentInput.trim().toLowerCase();
+
+      if (entered === target) {
+        // Correct
+        playBeep(true);
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        score += 10;
+        streak += 1;
+        document.getElementById('starScore').innerText = score;
+        document.getElementById('streakCount').innerText = `🔥 Streak: ${streak}`;
+        document.getElementById('feedbackMsg').innerText = "🎉 Super Star! Correct!";
+        document.getElementById('feedbackMsg').className = "min-h-[28px] text-base font-bold text-emerald-600";
+
+        currentIdx++;
+        setTimeout(() => {
+          if (currentIdx < words.length) {
+            loadWord();
+            sayCurrentWord();
+          } else {
+            showWinScreen();
           }
-
-          utterance.onend = () => {
-            window._activeUtterance = null;
-            if (onFinished) onFinished();
-          };
-
-          utterance.onerror = (err) => {
-            console.warn('Web Speech error, using fallback audio stream:', err);
-            window._activeUtterance = null;
-            playAudioStreamFallback(text, AppState.lang);
-          };
-
-          // Hold reference to avoid garbage collection drop-out
-          window._activeUtterance = utterance;
-          window.speechSynthesis.speak(utterance);
-          return;
-        } catch (e) {
-          console.warn('Speech synthesis exception, invoking streaming fallback:', e);
-        }
-      }
-
-      // If speech synthesis unavailable or threw
-      playAudioStreamFallback(text, AppState.lang);
-    }
-
-    // 1st Grade Dictation Script (Word is read clearly in context, NEVER printed on screen)
-    function playCurrentDictation(isSlow = false) {
-      if (!AppState.soundUnlocked) {
-        unlockAudioSystem();
-        return;
-      }
-
-      if (!AppState.isSentenceStage) {
-        const word = AppState.words[AppState.currentIndex];
-        if (!word) return;
-
-        let script = "";
-        if (AppState.lang.startsWith('es')) {
-          script = isSlow 
-            ? `La palabra es... ${word}. Repito: ${word}.`
-            : `Palabra número ${AppState.currentIndex + 1}: ${word}. ¿Cómo se escribe ${word}?`;
-        } else {
-          script = isSlow
-            ? `The word is... ${word}. Once again: ${word}.`
-            : `Word number ${AppState.currentIndex + 1}: ${word}. Spell the word ${word}.`;
-        }
-        speakAloud(script, isSlow);
+        }, 1200);
       } else {
-        const sentence = AppState.sentence;
-        let script = "";
-        if (AppState.lang.startsWith('es')) {
-          script = isSlow
-            ? `Escucha despacio: ${sentence}`
-            : `La oración semanal es: ${sentence}. Escribe la oración completa.`;
-        } else {
-          script = isSlow
-            ? `Listen slowly: ${sentence}`
-            : `Your weekly sentence is: ${sentence}. Write the complete sentence.`;
-        }
-        speakAloud(script, isSlow);
+        // Incorrect
+        playBeep(false);
+        streak = 0;
+        document.getElementById('streakCount').innerText = `🔥 Streak: 0`;
+        document.getElementById('feedbackMsg').innerText = "Try again! Listen to the sounds carefully.";
+        document.getElementById('feedbackMsg').className = "min-h-[28px] text-base font-bold text-amber-600";
+        sayCurrentWord(0.7);
       }
     }
 
-    function unlockAudioSystem() {
-      AppState.soundUnlocked = true;
-      getAudioContext();
-      refreshSystemVoices();
-
-      document.getElementById('audioUnlockModal').classList.add('hidden');
-      document.getElementById('audioStatusIndicator').innerHTML = `
-        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Audio Ready
-      `;
-
-      // Play soft activation chime
-      soundSuccessChime();
-
-      // Read Word #1 after brief delay
-      setTimeout(() => {
-        playCurrentDictation(false);
-      }, 450);
+    function showWinScreen() {
+      document.getElementById('quizScreen').classList.add('hidden');
+      document.getElementById('winScreen').classList.remove('hidden');
+      document.getElementById('finalScore').innerText = score;
+      confetti({ particleCount: 120, spread: 80 });
     }
 
-    function testSoundEngine() {
-      getAudioContext();
-      soundSuccessChime();
-      const testMsg = AppState.lang.startsWith('es')
-        ? "¡Excelente! El sonido de tu Chromebook está funcionando perfectamente."
-        : "Awesome! Your Chromebook audio is working perfectly.";
-      speakAloud(testMsg, false);
+    function restartQuiz() {
+      currentIdx = 0;
+      score = 0;
+      streak = 0;
+      document.getElementById('starScore').innerText = '0';
+      document.getElementById('streakCount').innerText = '🔥 Streak: 0';
+      document.getElementById('winScreen').classList.add('hidden');
+      document.getElementById('quizScreen').classList.remove('hidden');
+      loadWord();
+      sayCurrentWord();
     }
 
-    function startFreshQuiz() {
-      AppState.currentIndex = 0;
-      AppState.isSentenceStage = false;
-      AppState.attemptsOnCurrent = 0;
-      
-      document.getElementById('quizPanel').classList.remove('hidden');
-      document.getElementById('victoryPanel').classList.add('hidden');
-      renderCurrentItem();
+    // Physical Keyboard Support
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('quizScreen').classList.contains('hidden')) return;
+      if (e.key === 'Enter') checkAnswer();
+      else if (e.key === 'Backspace') handleBackspace();
+      else if (/^[a-zA-ZñÑ]$/.test(e.key)) handleKey(e.key.toLowerCase());
+    });
+
+    // Parent Settings
+    function openSettings() {
+      document.getElementById('wordInput').value = words.join(', ');
+      document.getElementById('settingsModal').classList.remove('hidden');
+      document.getElementById('settingsModal').classList.add('flex');
     }
 
-    function renderCurrentItem() {
-      const input = document.getElementById('spellingInput');
-      input.value = '';
-      input.disabled = false;
-      input.classList.remove('border-rose-400', 'border-emerald-400');
-      document.getElementById('hintBubble').classList.add('hidden');
-      displayFeedback('', '');
-
-      const totalSteps = AppState.words.length + 1; // words + 1 sentence
-
-      if (!AppState.isSentenceStage) {
-        const num = AppState.currentIndex + 1;
-        document.getElementById('progressStepLabel').textContent = `Word ${num} of ${AppState.words.length}`;
-        document.getElementById('levelBadge').textContent = 'Level 1: Words';
-        document.getElementById('btnSpeakLabel').textContent = 'Listen to Word';
-
-        const pct = (AppState.currentIndex / totalSteps) * 100;
-        document.getElementById('progressBarFill').style.width = `${pct}%`;
-
-        document.getElementById('sentenceContextBox').classList.add('hidden');
-        document.getElementById('inputHelpText').textContent = AppState.lang.startsWith('es')
-          ? "Escucha y escribe la palabra:"
-          : "Type the word you hear:";
-        input.placeholder = "type word...";
-
-        if (AppState.soundUnlocked) {
-          setTimeout(() => playCurrentDictation(false), 300);
-        }
-      } else {
-        document.getElementById('progressStepLabel').textContent = `Weekly Sentence Challenge!`;
-        document.getElementById('levelBadge').textContent = 'Level 2: Sentence';
-        document.getElementById('btnSpeakLabel').textContent = 'Listen to Sentence';
-
-        const pct = (AppState.words.length / totalSteps) * 100;
-        document.getElementById('progressBarFill').style.width = `${pct}%`;
-
-        document.getElementById('sentenceContextBox').classList.remove('hidden');
-        document.getElementById('inputHelpText').textContent = AppState.lang.startsWith('es')
-          ? "Escribe la oración completa:"
-          : "Type the complete sentence:";
-        input.placeholder = "type sentence...";
-
-        if (AppState.soundUnlocked) {
-          setTimeout(() => playCurrentDictation(false), 300);
-        }
-      }
-
-      input.focus();
-      buildVirtualKeyboard();
+    function setLang(lang) {
+      currentLang = lang;
+      document.getElementById('langPill').innerText = lang.toUpperCase();
+      document.getElementById('btnLangEn').className = lang === 'en' ? 'py-2 rounded-xl font-bold border-2 border-indigo-600 bg-indigo-50 text-indigo-700' : 'py-2 rounded-xl font-bold border-2 border-gray-200 text-gray-600';
+      document.getElementById('btnLangEs').className = lang === 'es' ? 'py-2 rounded-xl font-bold border-2 border-indigo-600 bg-indigo-50 text-indigo-700' : 'py-2 rounded-xl font-bold border-2 border-gray-200 text-gray-600';
+      buildKeyboard();
     }
 
-    function cleanFormat(str) {
-      return str.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?"']/g, "").replace(/\s+/g, " ");
-    }
-
-    function verifyAnswer() {
-      getAudioContext();
-      const input = document.getElementById('spellingInput');
-      const studentText = cleanFormat(input.value);
-
-      if (!studentText) {
-        displayFeedback("Type your answer first! ✏️", "text-amber-600");
-        input.focus();
-        return;
-      }
-
-      if (!AppState.isSentenceStage) {
-        const targetWord = cleanFormat(AppState.words[AppState.currentIndex]);
-        if (studentText === targetWord) {
-          processWordSuccess();
-        } else {
-          processMistake();
-        }
-      } else {
-        const targetSentence = cleanFormat(AppState.sentence);
-        if (studentText === targetSentence) {
-          processSentenceSuccess();
-        } else {
-          processMistake(true);
-        }
-      }
-    }
-
-    function processWordSuccess() {
-      soundSuccessChime();
-      AppState.stars += 10;
-      updateStarDisplay();
-
-      // Confetti burst
-      confetti({
-        particleCount: 55,
-        spread: 65,
-        origin: { y: 0.65 }
-      });
-
-      const cheersEn = ["Awesome! ⭐", "Super Star! 🎉", "Great spelling! ✨", "You got it! 🚀", "100% Right! 🌟"];
-      const cheersEs = ["¡Excelente! ⭐", "¡Muy bien! 🎉", "¡Genial! ✨", "¡Súper estrella! 🚀", "¡Perfecto! 🌟"];
-      const msg = AppState.lang.startsWith('es')
-        ? cheersEs[Math.floor(Math.random() * cheersEs.length)]
-        : cheersEn[Math.floor(Math.random() * cheersEn.length)];
-
-      displayFeedback(msg, "text-emerald-600");
-      document.getElementById('spellingInput').disabled = true;
-
-      setTimeout(() => {
-        AppState.currentIndex++;
-        AppState.attemptsOnCurrent = 0;
-        if (AppState.currentIndex >= AppState.words.length) {
-          AppState.isSentenceStage = true;
-        }
-        renderCurrentItem();
-      }, 1300);
-    }
-
-    function processSentenceSuccess() {
-      soundGrandVictory();
-      AppState.stars += 25;
-      updateStarDisplay();
-
-      confetti({
-        particleCount: 150,
-        spread: 100,
-        origin: { y: 0.5 }
-      });
-
-      document.getElementById('progressBarFill').style.width = '100%';
-      const msg = AppState.lang.startsWith('es') ? "¡Completaste la oración! 🌟" : "Sentence Complete! 🌟";
-      displayFeedback(msg, "text-emerald-600");
-
-      setTimeout(() => {
-        showCelebrationScreen();
-      }, 1500);
-    }
-
-    function processMistake(isSentence = false) {
-      soundTryAgainBoop();
-      AppState.attemptsOnCurrent++;
-
-      const input = document.getElementById('spellingInput');
-      input.classList.add('animate-wiggle');
-      setTimeout(() => input.classList.remove('animate-wiggle'), 500);
-
-      if (AppState.attemptsOnCurrent === 1) {
-        // First mistake: give encouragement and read slowly
-        const msg = AppState.lang.startsWith('es')
-          ? "¡Casi! Escucha otra vez e intenta de nuevo."
-          : "Close! Listen again and try once more.";
-        displayFeedback(msg, "text-rose-500");
-        setTimeout(() => playCurrentDictation(true), 400);
-      } else {
-        // Second mistake: auto-show phonics hint
-        requestPhonicsHint();
-        const msg = AppState.lang.startsWith('es')
-          ? "¡Mira la pista arriba para ayudarte!"
-          : "Check the hint above to help you!";
-        displayFeedback(msg, "text-amber-600");
-      }
-    }
-
-    function requestPhonicsHint() {
-      const hintBubble = document.getElementById('hintBubble');
-      if (!AppState.isSentenceStage) {
-        const word = AppState.words[AppState.currentIndex];
-        document.getElementById('hintFirstLetter').textContent = word[0].toUpperCase();
-        // Give pattern e.g., C _ _ _
-        const blanks = word.split('').map((char, i) => i === 0 ? char.toUpperCase() : '_').join(' ');
-        document.getElementById('hintLengthPattern').textContent = blanks;
-        hintBubble.classList.remove('hidden');
-      } else {
-        document.getElementById('hintFirstLetter').textContent = AppState.sentence[0].toUpperCase();
-        document.getElementById('hintLengthPattern').textContent = `Starts with: "${AppState.sentence.slice(0, 5)}..."`;
-        hintBubble.classList.remove('hidden');
-      }
-    }
-
-    function displayFeedback(text, styleClasses) {
-      const el = document.getElementById('feedbackBanner');
-      el.textContent = text;
-      el.className = `h-8 mt-2 text-center text-lg sm:text-xl font-black font-display transition-all ${styleClasses}`;
-    }
-
-    function updateStarDisplay() {
-      const el = document.getElementById('starScore');
-      el.textContent = AppState.stars;
-      el.parentElement.classList.add('scale-115');
-      setTimeout(() => el.parentElement.classList.remove('scale-115'), 220);
-    }
-
-    function showCelebrationScreen() {
-      document.getElementById('quizPanel').classList.add('hidden');
-      const victory = document.getElementById('victoryPanel');
-      victory.classList.remove('hidden');
-
-      document.getElementById('finalScoreStars').textContent = `⭐ ${AppState.stars}`;
-      document.getElementById('finalCountMastered').textContent = `${AppState.words.length} + Sentence`;
-
-      const tags = document.getElementById('victoryWordTags');
-      tags.innerHTML = '';
-      AppState.words.forEach(w => {
-        const span = document.createElement('span');
-        span.className = 'bg-emerald-100 text-emerald-800 text-sm font-black px-3 py-1 rounded-xl border border-emerald-300';
-        span.textContent = `✓ ${w}`;
-        tags.appendChild(span);
-      });
-    }
-
-    function buildVirtualKeyboard() {
-      const rowsContainer = document.getElementById('keyboardRows');
-      rowsContainer.innerHTML = '';
-
-      let rows = [
-        ['q','w','e','r','t','y','u','i','o','p'],
-        ['a','s','d','f','g','h','j','k','l'],
-        ['z','x','c','v','b','n','m']
-      ];
-
-      // Add Spanish 'ñ' if Spanish mode active
-      if (AppState.lang.startsWith('es')) {
-        rows[1].push('ñ');
-      }
-
-      rows.forEach((rowLetters, rIdx) => {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'flex gap-1 sm:gap-1.5 justify-center w-full';
-
-        rowLetters.forEach(ch => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'key-btn bg-white hover:bg-slate-50 text-slate-800 font-black text-base sm:text-lg h-9 sm:h-10 flex-1 rounded-lg border-b-2 border-slate-300 shadow-xs flex items-center justify-center';
-          btn.textContent = ch;
-          btn.onclick = () => insertLetter(ch);
-          rowDiv.appendChild(btn);
-        });
-
-        // Add backspace to row 3
-        if (rIdx === 2) {
-          const bsp = document.createElement('button');
-          bsp.type = 'button';
-          bsp.className = 'key-btn bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold px-3 h-9 sm:h-10 rounded-lg border-b-2 border-amber-300 shadow-xs flex items-center justify-center text-sm';
-          bsp.innerHTML = '⌫';
-          bsp.onclick = deleteLastLetter;
-          rowDiv.appendChild(bsp);
-        }
-
-        rowsContainer.appendChild(rowDiv);
-      });
-    }
-
-    function insertLetter(char) {
-      const input = document.getElementById('spellingInput');
-      input.value += char;
-      input.focus();
-    }
-
-    function insertSpace() {
-      const input = document.getElementById('spellingInput');
-      input.value += ' ';
-      input.focus();
-    }
-
-    function deleteLastLetter() {
-      const input = document.getElementById('spellingInput');
-      input.value = input.value.slice(0, -1);
-      input.focus();
-    }
-
-    function openParentGate() {
-      // Generate simple math question for kid-lock (e.g. 5 + 3)
-      const a = Math.floor(Math.random() * 6) + 3;
-      const b = Math.floor(Math.random() * 5) + 2;
-      AppState.parentGateSolution = a + b;
-
-      document.getElementById('gateMathProblem').textContent = `${a} + ${b} = ?`;
-      document.getElementById('gateAnswerInput').value = '';
-      
-      const modal = document.getElementById('parentGateModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      document.getElementById('gateAnswerInput').focus();
-    }
-
-    function closeParentGate() {
-      const modal = document.getElementById('parentGateModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function verifyParentGate() {
-      const val = parseInt(document.getElementById('gateAnswerInput').value, 10);
-      if (val === AppState.parentGateSolution) {
-        closeParentGate();
-        openParentDashboard();
-      } else {
-        alertFallback("Incorrect answer. Parent access only!");
-        document.getElementById('gateAnswerInput').value = '';
-        document.getElementById('gateAnswerInput').focus();
-      }
-    }
-
-    function openParentDashboard() {
-      document.getElementById('inputWordList').value = AppState.words.join(', ');
-      document.getElementById('inputSentenceDictation').value = AppState.sentence;
-      
-      const radio = document.querySelector(`input[name="langSelection"][value="${AppState.lang}"]`);
-      if (radio) radio.checked = true;
-      syncLangUI();
-      refreshSystemVoices();
-
-      const modal = document.getElementById('parentDashboardModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeParentDashboard() {
-      const modal = document.getElementById('parentDashboardModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function syncLangUI() {
-      const selected = document.querySelector('input[name="langSelection"]:checked')?.value || 'en-US';
-      const labelEn = document.getElementById('langRadioEn');
-      const labelEs = document.getElementById('langRadioEs');
-
-      if (selected === 'en-US') {
-        labelEn.className = "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-indigo-600 bg-indigo-50 text-indigo-900 font-bold cursor-pointer text-sm shadow-sm";
-        labelEs.className = "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-400 font-semibold cursor-pointer text-sm";
-      } else {
-        labelEs.className = "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 text-emerald-900 font-bold cursor-pointer text-sm shadow-sm";
-        labelEn.className = "flex items-center justify-center gap-2 p-3 rounded-2xl border-2 border-slate-200 bg-slate-50 text-slate-400 font-semibold cursor-pointer text-sm";
-      }
-    }
-
-    function loadSamplePreset(type) {
-      if (type === 'en') {
-        document.querySelector('input[name="langSelection"][value="en-US"]').checked = true;
-        document.getElementById('inputWordList').value = 'cat, ship, jump, play, like, make';
-        document.getElementById('inputSentenceDictation').value = 'The cat can jump fast.';
-      } else {
-        document.querySelector('input[name="langSelection"][value="es-ES"]').checked = true;
-        document.getElementById('inputWordList').value = 'gato, sol, casa, mesa, flor, agua';
-        document.getElementById('inputSentenceDictation').value = 'El gato juega en la casa.';
-      }
-      syncLangUI();
-    }
-
-    function handleSaveSettings(e) {
-      e.preventDefault();
-      const raw = document.getElementById('inputWordList').value;
-      const parsed = raw.split(/[\n,]+/).map(w => w.trim().toLowerCase()).filter(w => w.length > 0);
-      const sentenceStr = document.getElementById('inputSentenceDictation').value.trim();
-      const selectedLang = document.querySelector('input[name="langSelection"]:checked').value;
-
-      if (parsed.length === 0) return;
-
-      AppState.words = parsed;
-      AppState.sentence = sentenceStr || 'The cat can jump.';
-      AppState.lang = selectedLang;
-
-      // Persist to local storage
-      try {
-        localStorage.setItem('spelling_star_quest_data', JSON.stringify({
-          lang: AppState.lang,
-          words: AppState.words,
-          sentence: AppState.sentence
-        }));
-      } catch (err) {
-        console.warn('LocalStorage save failed', err);
-      }
-
-      closeParentDashboard();
-      updateLanguageBadge();
-      startFreshQuiz();
-    }
-
-    function updateLanguageBadge() {
-      const badge = document.getElementById('badgeLang');
-      if (AppState.lang.startsWith('es')) {
-        badge.innerHTML = '🇪🇸 Español';
-        badge.className = 'text-xs font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full';
-      } else {
-        badge.innerHTML = '🇺🇸 English';
-        badge.className = 'text-xs font-bold text-indigo-800 bg-indigo-100 px-2.5 py-0.5 rounded-full';
-      }
+    function saveAndCloseSettings() {
+      const raw = document.getElementById('wordInput').value;
+      const parsed = raw.split(',').map(w => w.trim()).filter(w => w.length > 0);
+      if (parsed.length > 0) words = parsed;
+      localStorage.setItem('spelling_words', JSON.stringify(words));
+      localStorage.setItem('spelling_lang', currentLang);
+      document.getElementById('settingsModal').classList.add('hidden');
+      document.getElementById('settingsModal').classList.remove('flex');
+      restartQuiz();
     }
 
     function loadSavedConfig() {
-      try {
-        const saved = localStorage.getItem('spelling_star_quest_data');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.lang) AppState.lang = parsed.lang;
-          if (Array.isArray(parsed.words) && parsed.words.length > 0) AppState.words = parsed.words;
-          if (parsed.sentence) AppState.sentence = parsed.sentence;
-        }
-      } catch (e) {
-        console.warn('Error reading localStorage', e);
-      }
-      updateLanguageBadge();
-      startFreshQuiz();
+      const saved = localStorage.getItem('spelling_words');
+      const savedLang = localStorage.getItem('spelling_lang');
+      if (saved) words = JSON.parse(saved);
+      if (savedLang) setLang(savedLang);
     }
 
-    function alertFallback(msg) {
-      const el = document.getElementById('feedbackBanner');
-      displayFeedback(msg, "text-rose-600");
+    function testVoiceDiagnostics() {
+      playBeep(true);
+      speakText(currentLang === 'es' ? 'prueba de sonido' : 'sound test working');
     }
-
-    // Physical Chromebook Keyboard Support
-    document.getElementById('spellingInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        verifyAnswer();
-      }
-    });
-
-    document.getElementById('gateAnswerInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        verifyParentGate();
-      }
-    });
-
-    // Window Startup Initialization
-    window.addEventListener('load', () => {
-      loadSavedConfig();
-      refreshSystemVoices();
-    });
   </script>
 </body>
 </html>
